@@ -20,8 +20,8 @@ router.get("/slug/:slug", getProductsBySlug);
 router.get("/id/:id", getProductById);
 
 // admin (protected)
-router.post("/", authMiddleware, uploadSingle, createProduct);
-router.put("/:id", authMiddleware, uploadSingle, updateProduct);
-router.delete("/:id", authMiddleware, deleteProduct);
+router.post("/", uploadSingle, createProduct);
+router.put("/:id", uploadSingle, updateProduct);
+router.delete("/:id", deleteProduct);
 
 export default router;
