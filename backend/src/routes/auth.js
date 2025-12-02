@@ -1,15 +1,20 @@
-// authJS 
+// auth.js
 import express from "express";
-import { adminLogin,  adminRegister } from "../controllers/authController.js";
+import { login, userRegister, adminRegister } from "../controllers/authController.js";
+
 const router = express.Router();
 
-// POST routes
-router.post("/login", adminLogin);
-router.post("/register", adminRegister);
+// REGISTER USER BIASA
+router.post("/register", userRegister);
 
-// GET route optional untuk testing via browser
+// REGISTER ADMIN (opsional)
+router.post("/admin/register", adminRegister);
+
+// LOGIN (untuk semua user)
+router.post("/login", login);
+
+// testing routes
 router.get("/login", (req, res) => res.send("Login route is working"));
 router.get("/register", (req, res) => res.send("Register route is working"));
-
 
 export default router;
