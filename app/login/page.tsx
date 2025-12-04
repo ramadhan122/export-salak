@@ -35,8 +35,13 @@ export default function LoginPage() {
       localStorage.setItem("username", username);
       
       setTimeout(() => {
-        window.location.href = "/dashboardAdm";
+        if (res.data.user.role === "admin") {
+          window.location.href = "/dashboardAdm"; // admin dashboard
+        } else {
+          window.location.href = "/"; // user biasa ke landing page
+        }
       }, 1500);
+
     } catch (err: any) {
       setMessageType("error");
       const errorMsg = err.response?.data?.error || "Login gagal. Silahkan coba lagi.";
