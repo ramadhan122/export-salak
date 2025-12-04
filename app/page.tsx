@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ShoppingCart, Leaf, Menu, X, ArrowRight, MapPin, Star } from "lucide-react";
+import { ShoppingCart, Leaf, Menu, X, ArrowRight, MapPin, Star, LogOut } from "lucide-react";
 
 interface Product {
   id: number;
@@ -16,6 +16,26 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // ==========================
+  //  AUTH CHECK (username)
+  // ==========================
+  const [user, setUser] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedName = localStorage.getItem("username");
+    if (savedName) setUser(savedName);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("username");
+    setUser(null);
+    window.location.reload();
+  };
+
+  // ==========================
+  //  FETCH PRODUCTS
+  // ==========================
   useEffect(() => {
     fetch("http://localhost:5000/api/products?highlight=1")
       .then((res) => res.json())
@@ -57,16 +77,27 @@ export default function Home() {
 
             {/* Auth Buttons */}
             <div className="hidden md:flex items-center gap-3">
-              <a href="/login">
-                <button className="px-4 py-2 text-green-600 font-semibold hover:text-green-700 transition">
-                  Login
+              {!user ? (
+                <>
+                  <a href="/login">
+                    <button className="px-4 py-2 text-green-600 font-semibold hover:text-green-700 transition">
+                      Login
+                    </button>
+                  </a>
+                  <a href="/register">
+                    <button className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-green-500/50 transition-all hover:scale-105">
+                      Register
+                    </button>
+                  </a>
+                </>
+              ) : (
+                <button 
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 py-2 border border-green-600 rounded-lg font-semibold text-green-700 hover:bg-green-50 transition"
+                >
+                  <LogOut className="w-5 h-5" /> Keluar
                 </button>
-              </a>
-              <a href="/register">
-                <button className="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-green-500/50 transition-all hover:scale-105">
-                  Register
-                </button>
-              </a>
+              )}
             </div>
           </div>
 
@@ -75,17 +106,29 @@ export default function Home() {
             <div className="md:hidden pb-4 pt-2 border-t border-green-100">
               <a href="#produk" className="block px-4 py-2 text-gray-700 hover:text-green-600 transition">Produk</a>
               <a href="#tentang" className="block px-4 py-2 text-gray-700 hover:text-green-600 transition">Tentang</a>
+
               <div className="flex flex-col gap-2 mt-4 px-4">
-                <a href="/login">
-                  <button className="w-full px-4 py-2 text-green-600 font-semibold border border-green-600 rounded-lg">
-                    Login
+                {!user ? (
+                  <>
+                    <a href="/login">
+                      <button className="w-full px-4 py-2 text-green-600 font-semibold border border-green-600 rounded-lg">
+                        Login
+                      </button>
+                    </a>
+                    <a href="/register">
+                      <button className="w-full px-4 py-2 bg-green-600 text-white font-semibold rounded-lg">
+                        Register
+                      </button>
+                    </a>
+                  </>
+                ) : (
+                  <button 
+                    className="w-full px-4 py-2 text-green-600 font-semibold border border-green-600 rounded-lg"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="w-5 h-5 inline" /> Keluar
                   </button>
-                </a>
-                <a href="/register">
-                  <button className="w-full px-4 py-2 bg-green-600 text-white font-semibold rounded-lg">
-                    Register
-                  </button>
-                </a>
+                )}
               </div>
             </div>
           )}
@@ -111,6 +154,7 @@ export default function Home() {
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Kami menyediakan salak kualitas ekspor untuk pasar internasional dengan jaminan kesegaran dan kualitas terbaik.
               </p>
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <a href="#produk">
                   <button className="flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-green-500/50 transition-all hover:scale-105 w-full sm:w-auto">
@@ -126,7 +170,6 @@ export default function Home() {
                 </a>
               </div>
 
-              {/* Features */}
               <div className="grid grid-cols-2 gap-6 mt-12">
                 <div className="flex items-center gap-3">
                   <Star className="w-6 h-6 text-yellow-500" />
@@ -140,13 +183,15 @@ export default function Home() {
             </div>
 
             <div className="hidden md:block">
-              <div className="relative h-96 bg-gradient-to-br from-green-400/20 to-yellow-400/20 rounded-3xl border-2 border-green-200 flex items-center justify-center">
-                <div className="text-center">
-                  <Leaf className="w-32 h-32 text-green-600 mx-auto opacity-20 mb-4" />
-                  <p className="text-gray-600 font-semibold">Salak Fresh Premium</p>
-                </div>
+              <div className="relative h-96 bg-gradient-to-br from-green-400/20 to-yellow-400/20 rounded-3xl border-2 border-green-200 overflow-hidden">
+                <img
+                  src="https://i.pinimg.com/736x/21/9a/06/219a065aa9f85d1cc579e3f3e4bc5140.jpg"
+                  alt="Salak Fresh Premium"
+                  className="absolute inset-0 w-full h-full object-cover opacity-100"
+                />
               </div>
             </div>
+
           </div>
         </div>
       </section>
