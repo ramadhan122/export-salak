@@ -17,7 +17,7 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // ==========================
-  //  AUTH CHECK (username)
+  //  AUTH CHECK
   // ==========================
   const [user, setUser] = useState<string | null>(null);
 
@@ -31,6 +31,22 @@ export default function Home() {
     localStorage.removeItem("username");
     setUser(null);
     window.location.reload();
+  };
+
+  // ==========================
+  // POPUP LOGIN REQUIRE
+  // ==========================
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+
+  const handleMulaiPesan = () => {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      setShowLoginPopup(true);
+      return;
+    }
+
+    window.location.href = "/allproducts";
   };
 
   // ==========================
@@ -52,6 +68,31 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+
+      {/* POPUP LOGIN*/}
+      {showLoginPopup && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-80 text-center">
+            <h3 className="text-lg font-bold text-gray-800 mb-3">Harus Login Terlebih Dahulu</h3>
+            <p className="text-gray-600 mb-6">Silakan login untuk melanjutkan pemesanan.</p>
+
+            <button
+              onClick={() => window.location.href = "/login"}
+              className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+            >
+              Login Sekarang
+            </button>
+
+            <button
+              onClick={() => setShowLoginPopup(false)}
+              className="w-full mt-3 py-2 border border-gray-400 rounded-lg text-gray-700 font-semibold hover:bg-gray-100 transition"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-green-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -148,26 +189,28 @@ export default function Home() {
               <div className="inline-block px-4 py-2 bg-green-100 rounded-full mb-4">
                 <span className="text-green-700 font-semibold text-sm">🌴 Produk Premium</span>
               </div>
+
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Ekspor <span className="text-green-600">Salak</span> & Buah Tropis Indonesia
               </h1>
+
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Kami menyediakan salak kualitas ekspor untuk pasar internasional dengan jaminan kesegaran dan kualitas terbaik.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <a href="#produk">
-                  <button className="flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-bold rounded-lg hover:shadow-lg hover:shadow-green-500/50 transition-all hover:scale-105 w-full sm:w-auto">
-                    Lihat Produk
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
-                </a>
-                <a href="/register">
-                  <button className="flex items-center justify-center gap-2 px-8 py-3 border-2 border-green-600 text-green-600 font-bold rounded-lg hover:bg-green-50 transition-all w-full sm:w-auto">
-                    Mulai Pesan
-                    <ShoppingCart className="w-5 h-5" />
-                  </button>
-                </a>
+
+                {/* ============================== */}
+                {/*       TOMBOL MULAI PESAN       */}
+                {/* ============================== */}
+                <button
+                  onClick={handleMulaiPesan}
+                  className="flex items-center justify-center gap-2 px-8 py-3 border-2 border-green-600 text-green-600 font-bold rounded-lg hover:bg-green-50 transition-all w-full sm:w-auto"
+                >
+                  Mulai Pesan
+                  <ShoppingCart className="w-5 h-5" />
+                </button>
+
               </div>
 
               <div className="grid grid-cols-2 gap-6 mt-12">
