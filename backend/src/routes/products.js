@@ -19,6 +19,9 @@ router.get("/", getProducts);
 router.get("/slug/:slug", getProductsBySlug);
 router.get("/id/:id", getProductById);
 
+// ✅ TAMBAHKAN INI (biar support /api/products/:id)
+router.get("/:id", getProductById);
+
 // admin (protected)
 router.post("/", uploadSingle, createProduct);
 router.put("/:id", uploadSingle, updateProduct);
