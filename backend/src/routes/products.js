@@ -23,8 +23,8 @@ router.get("/id/:id", getProductById);
 router.get("/:id", getProductById);
 
 // admin (protected)
-router.post("/", uploadSingle, createProduct);
-router.put("/:id", uploadSingle, updateProduct);
-router.delete("/:id", deleteProduct);
+router.post("/", authMiddleware, uploadSingle, createProduct);
+router.put("/:id", authMiddleware, uploadSingle, updateProduct);
+router.delete("/:id", authMiddleware, deleteProduct);
 
 export default router;

@@ -1,6 +1,7 @@
 // auth.js
 import express from "express";
-import { login, userRegister, adminRegister } from "../controllers/authController.js";
+import { login, logout, userRegister, adminRegister } from "../controllers/authController.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -12,6 +13,18 @@ router.post("/admin/register", adminRegister);
 
 // LOGIN (untuk semua user)
 router.post("/login", login);
+
+router.get("/me", authMiddleware, (req, res) => {
+    res.json({
+        user: req.user,
+    });
+});
+
+router.post(
+    "/logout",
+    authMiddleware,
+    logout
+);
 
 // testing routes
 router.get("/login", (req, res) => res.send("Login route is working"));

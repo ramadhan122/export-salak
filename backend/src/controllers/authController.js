@@ -2,6 +2,7 @@ import pool from "../db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { v4 as uuidv4 } from "uuid";
 dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
@@ -62,7 +63,11 @@ export async function adminRegister(req, res) {
 // ======================================
 export async function login(req, res) {
     try {
-        const { username, password } = req.body;
+        const { 
+            username,
+            password, 
+            forceLogin = false,
+         } = req.body;
 
         const { rows } = await pool.query(
             "SELECT * FROM users WHERE username=$1 LIMIT 1",
@@ -77,8 +82,33 @@ export async function login(req, res) {
         if (!ok)
             return res.status(401).json({ error: "invalid credentials" });
 
+        if (user.session_token && !forceLogin) {
+            return res.json({
+                activeSession: true,
+                message:
+                    "Akun sedang digunakan di perangkat lain.",
+            });
+        }
+
+        const sessionToken = uuidv4();
+
+        await pool.query(
+            `
+            UPDATE users 
+            SET session_token = $1
+            WHERE id = $2
+        `,
+            [sessionToken, user.id]
+        );
+
         const token = jwt.sign(
-            { id: user.id, username: user.username, role: user.role },
+            { 
+                id: user.id, 
+                username: user.username, 
+                role: user.role,
+                sessionToken, 
+            },
+
             JWT_SECRET,
             { expiresIn: JWT_EXPIRES_IN }
         );
@@ -95,4 +125,21 @@ export async function login(req, res) {
         console.log("LOGIN ERR:", err);
         res.status(500).json({ error: err.message });
     }
+}
+
+export async function logout(req, res) {
+
+    await pool.query(
+        `
+        UPDATE users
+        SET session_token = NULL
+        WHERE id = $1
+        `,
+        [req.user.id]
+    );
+
+    res.json({
+        success: true,
+    });
+
 }
