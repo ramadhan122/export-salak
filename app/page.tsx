@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ShoppingCart, Leaf, Menu, X, ArrowRight, MapPin, Star, LogOut } from "lucide-react";
+import axios from "axios";
 
 interface Product {
   id: number;
@@ -26,11 +27,29 @@ export default function Home() {
     if (savedName) setUser(savedName);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("username");
-    setUser(null);
-    window.location.reload();
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (token) {
+        await axios.post(
+          "http://localhost:5000/api/auth/logout",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("username");
+      setUser(null);
+      window.location.reload();
+    }
   };
 
   // ==========================

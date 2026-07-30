@@ -27,6 +27,45 @@ export default function LoginPage() {
         username,
         password,
       });
+      console.log("LOGIN RESPONSE:", res.data);
+
+      //kalau akun sedang login di perangkat lain
+      if (res.data.activeSession) {
+        const lanjut = window.confirm(
+          "akun ini sedang digunakan di perangkat lain.\n\n" +
+          "login di perangkat ini akan mengakhiri sesi pada perangkat sebelumnya.\n\n" +
+          "lanjutkan login?"
+        );
+
+        if (!lanjut) {
+          return;
+        }
+        //login paksa
+        const forceRes = await axios.post(
+          "http://localhost:5000/api/auth/login",
+          {
+            username,
+            password,
+            forceLogin: true,
+          }
+        );
+        
+        setMessageType("success");
+        setMessage("login berhasil! mengalihkan...");
+
+        localStorage.setItem("authToken", forceRes.data.token);
+        localStorage.setItem("username", username);
+
+        setTimeout(() => {
+          if (forceRes.data.user.role === "admin"){
+            window.location.href = "/dashboardAdm";
+          } else {
+            window.location.href = "/";
+          }
+        }, 1500);
+
+        return;
+      }
       
       setMessageType("success");
       setMessage("Login berhasil! Mengalihkan...");
