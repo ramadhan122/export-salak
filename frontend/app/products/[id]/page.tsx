@@ -38,81 +38,94 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-20">
-      <div className="max-w-5xl mx-auto px-4 grid md:grid-cols-2 gap-10">
+      <div className="max-w-5xl mx-auto px-4">
 
-        {/* IMAGE */}
-        <div className="bg-white rounded-2xl overflow-hidden border">
-          {product.image ? (
-            <img
-              src={`http://localhost:5000/uploads/${product.image}`}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-80">
-              <Leaf className="w-20 h-20 text-green-400" />
+        {/* GRID */}
+        <div className="grid md:grid-cols-2 gap-10">
+
+          {/* IMAGE */}
+          <div className="bg-white rounded-2xl overflow-hidden border">
+            {product.image ? (
+              <img
+                src={`http://localhost:5000/uploads/${product.image}`}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-80">
+                <Leaf className="w-20 h-20 text-green-400" />
+              </div>
+            )}
+          </div>
+
+          {/* DETAIL */}
+          <div>
+            <h1 className="text-3xl font-bold mb-4">
+              {product.name}
+            </h1>
+
+            {/* Ringkasan */}
+            <p className="text-gray-600 mb-6">
+              Buah salak kualitas ekspor dari Indonesia.
+            </p>
+
+            <p className="text-2xl font-bold text-green-600 mb-6">
+              Rp {product.price.toLocaleString("id-ID")} /Kg
+            </p>
+
+            {/* Quantity */}
+            <div className="flex items-center gap-4 mb-6">
+              <button
+                onClick={() => setQty(qty > 1 ? qty - 1 : 1)}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                -
+              </button>
+
+              <span className="text-lg font-semibold">
+                {qty}
+              </span>
+
+              <button
+                onClick={() => setQty(qty + 1)}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                +
+              </button>
             </div>
-          )}
-        </div>
 
-        {/* DETAIL */}
-        <div>
-          <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+            {/* Total */}
+            <p className="mb-6 text-gray-700">
+              Total :{" "}
+              <span className="font-bold text-green-600">
+                Rp {(product.price * qty).toLocaleString("id-ID")}
+              </span>
+            </p>
 
-          <p className="text-gray-600 mb-6">
-            {product.description || "Buah salak kualitas ekspor, fresh langsung dari petani Indonesia."}
-          </p>
-
-          <p className="text-2xl font-bold text-green-600 mb-6">
-            Rp {product.price.toLocaleString("id-ID")} /Kg
-          </p>
-
-          {/* QUANTITY */}
-          <div className="flex items-center gap-4 mb-6">
-            <button
-              onClick={() => setQty(qty > 1 ? qty - 1 : 1)}
-              className="px-3 py-1 bg-gray-200 rounded"
-            >
-              -
-            </button>
-
-            <span className="text-lg font-semibold">{qty}</span>
-
-            <button
-              onClick={() => setQty(qty + 1)}
-              className="px-3 py-1 bg-gray-200 rounded"
-            >
-              +
+            {/* Button */}
+            <button className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
+              <ShoppingCart className="w-5 h-5" />
+              Tambah ke Keranjang
             </button>
           </div>
 
-          {/* TOTAL */}
-          <p className="mb-6 text-gray-700">
-            Total:{" "}
-            <span className="font-bold text-green-600">
-              Rp {(product.price * qty).toLocaleString("id-ID")}
-            </span>
-          </p>
-
-          {/* BUTTON */}
-          <button className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
-            <ShoppingCart className="w-5 h-5" />
-            Tambah ke Keranjang
-          </button>
         </div>
 
-        {/* garis pembatas */}
+        {/* Garis Pembatas */}
+        <div className="border-t border-gray-200 my-10"></div>
 
-        <div className="border-t border-gray-200 my-8"></div>
-
-        {/* deskripsi*/}
+        {/* Deskripsi */}
         <div>
-          <h2 className="text-2xl font-bold mb-4"></h2>
-          <p className="text-gray-700 leading-8 whitespace-pre-line">
+          <h2 className="text-2xl font-bold mb-4">
+            Deskripsi Produk
+          </h2>
+
+          <p className="text-gray-700 leading-8 text-lg whitespace-pre-line">
             {product.description ||
-              "Buah salak kualitas ekspor yang dipanen langsung dari petani Indonesia. Memiliki rasa manis, tekstur renyah, dan kesegaran yang terjaga sehingga cocok untuk pasar lokal maupun internasional."
-            }
+              "Buah salak kualitas ekspor yang dipanen langsung dari petani Indonesia. Memiliki rasa manis, tekstur renyah, dan kesegaran yang terjaga sehingga cocok untuk pasar lokal maupun internasional."}
           </p>
         </div>
+
       </div>
     </div>
   );
