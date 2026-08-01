@@ -172,6 +172,9 @@ export default function ProductsAdmin() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                    Deskripsi
+                  </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
                     Aksi
                   </th>
@@ -198,6 +201,15 @@ export default function ProductsAdmin() {
                       ) : (
                         <span className="text-gray-400 text-xs">-</span>
                       )}
+                    </td>
+
+                    {/* Deskripsi */}
+                    <td className="px-6 py-4 text-sm text-gray-700 max-w-xs">
+                      {p.description
+                        ? p.description.length > 50
+                          ? `${p.description.substring(0, 50)}...`
+                          : p.description
+                        : "-"}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button

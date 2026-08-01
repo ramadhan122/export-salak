@@ -63,7 +63,7 @@ export default function ProductDetailPage() {
           </p>
 
           <p className="text-2xl font-bold text-green-600 mb-6">
-            Rp {product.price.toLocaleString("id-ID")}
+            Rp {product.price.toLocaleString("id-ID")} /Kg
           </p>
 
           {/* QUANTITY */}
@@ -100,6 +100,19 @@ export default function ProductDetailPage() {
           </button>
         </div>
 
+        {/* garis pembatas */}
+
+        <div className="border-t border-gray-200 my-8"></div>
+
+        {/* deskripsi*/}
+        <div>
+          <h2 className="text-2xl font-bold mb-4"></h2>
+          <p className="text-gray-700 leading-8 whitespace-pre-line">
+            {product.description ||
+              "Buah salak kualitas ekspor yang dipanen langsung dari petani Indonesia. Memiliki rasa manis, tekstur renyah, dan kesegaran yang terjaga sehingga cocok untuk pasar lokal maupun internasional."
+            }
+          </p>
+        </div>
       </div>
     </div>
   );
