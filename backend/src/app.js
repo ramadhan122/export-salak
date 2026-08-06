@@ -7,7 +7,7 @@ import rfqRoutes from "./routes/rfq.js";
 import authRoutes from "./routes/auth.js";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import profileRoutes from "./routes/profile.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -24,5 +24,5 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/rfq", rfqRoutes);
 app.use("/api/auth", authRoutes);
-
+app.use("/api/profile", profileRoutes);
 app.listen(5000, () => console.log("Api running on port 5000"))

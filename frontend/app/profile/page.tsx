@@ -14,11 +14,73 @@ import {
 
 export default function ProfilePage() {
   const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [country, setCountry] = useState("");
+  const [address, setAddress] = useState("");
 
   useEffect(() => {
-    const name = localStorage.getItem("username");
-    if (name) setUsername(name);
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+
+        const res = await fetch("http://localhost:5000/api/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        setUsername(data.username || "");
+        setFullName(data.full_name || "");
+        setEmail(data.email || "");
+        setPhone(data.phone || "");
+        setCountry(data.country || "");
+        setAddress(data.address || "");
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchProfile();
   }, []);
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      const res = await fetch("http://localhost:5000/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          full_name: fullName,
+          email,
+          phone,
+          country,
+          address,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.user) {
+          setFullName(data.user.full_name || "");
+          setEmail(data.user.email || "");
+          setPhone(data.user.phone || "");
+          setCountry(data.user.country || "");
+          setAddress(data.user.address || "");
+      }
+
+      alert(data.message);
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menyimpan profil");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
@@ -35,11 +97,11 @@ export default function ProfilePage() {
             </div>
 
             <h1 className="text-3xl font-bold mt-5">
-              {username}
+              {fullName || username}
             </h1>
 
             <p className="text-gray-500">
-              Pembeli
+              @{username}
             </p>
 
           </div>
@@ -50,11 +112,28 @@ export default function ProfilePage() {
 
             <div>
               <label className="font-semibold">
+                Username
+              </label>
+
+              <input
+                value={username}
+                disabled
+                className="mt-2 w-full rounded-xl border bg-gray-100 p-3 text-gray-500 cursor-not-allowed"
+              />
+
+              <p className="text-sm text-gray-400 mt-1">
+                Username digunakan untuk login dan tidak dapat diubah.
+              </p>
+            </div>
+
+            <div>
+              <label className="font-semibold">
                 Nama Lengkap
               </label>
 
               <input
-                defaultValue={username}
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
                 className="mt-2 w-full border rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
@@ -66,7 +145,10 @@ export default function ProfilePage() {
 
               <div className="relative mt-2">
                 <Mail className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+
                 <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
                   className="pl-11 w-full border rounded-xl p-3"
                 />
@@ -81,6 +163,8 @@ export default function ProfilePage() {
               <div className="relative mt-2">
                 <Phone className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
                 <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   placeholder="08xxxxxxxxxx"
                   className="pl-11 w-full border rounded-xl p-3"
                 />
@@ -94,11 +178,16 @@ export default function ProfilePage() {
 
               <div className="relative mt-2">
                 <MapPin className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
-                <select className="pl-11 w-full border rounded-xl p-3">
-                  <option>Indonesia</option>
-                  <option>Malaysia</option>
-                  <option>Singapore</option>
-                  <option>Thailand</option>
+                <select
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="pl-11 w-full border rounded-xl p-3"
+                >
+                    <option value="">Pilih Negara</option>
+                    <option value="Indonesia">Indonesia</option>
+                    <option value="Malaysia">Malaysia</option>
+                    <option value="Singapore">Singapore</option>
+                    <option value="Thailand">Thailand</option>
                 </select>
               </div>
             </div>
@@ -109,15 +198,20 @@ export default function ProfilePage() {
               </label>
 
               <textarea
-                rows={4}
-                className="mt-2 w-full border rounded-xl p-3"
-                placeholder="Masukkan alamat lengkap..."
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  rows={4}
+                  className="mt-2 w-full border rounded-xl p-3"
+                  placeholder="Masukkan alamat lengkap..."
               />
             </div>
 
           </div>
 
-          <button className="mt-8 bg-green-600 hover:bg-green-700 text-white rounded-xl px-6 py-3 flex items-center gap-2 font-semibold transition">
+          <button
+            onClick={handleSave}
+            className="mt-8 bg-green-600 hover:bg-green-700 text-white rounded-xl px-6 py-3 flex items-center gap-2 font-semibold transition"
+          >
             <Save className="w-5 h-5" />
             Simpan Perubahan
           </button>
