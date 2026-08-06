@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ShoppingCart, Leaf, Menu, X, ArrowRight, MapPin, Star, LogOut } from "lucide-react";
+import { ShoppingCart, Leaf, Sprout, Menu, X, LogOut, BadgeCheck, Plane, User, UserRound } from "lucide-react";
 import axios from "axios";
 
 interface Product {
@@ -195,12 +195,24 @@ export default function Home() {
                   </a>
                 </>
               ) : (
+                <div className="flex item-center gap-3">
+                  <a href="/profile">
+                    <button
+                      className="w-11 h-11 rounded-full bg-green-100 border-2 border-green-200 flex items-center justify-center hover:bg-green-200 hover:scale-105 transition-all"
+                      title="Profil"
+                    >
+                      <UserRound className="w-6 h-6 text-green-700" />
+                    </button>
+                  </a>
+
                 <button 
                   onClick={() => setShowLogoutModal(true)}
                   className="flex items-center gap-2 px-4 py-2 border border-green-600 rounded-lg font-semibold text-green-700 hover:bg-green-50 transition"
                 >
                   <LogOut className="w-5 h-5" /> Keluar
                 </button>
+                </div>
+
               )}
             </div>
           </div>
@@ -208,6 +220,7 @@ export default function Home() {
           {/* Mobile Menu */}
           {mobileMenuOpen && (
             <div className="md:hidden pb-4 pt-2 border-t border-green-100">
+              <a href="/profile" className="block px-4 py-2 text-gray-700 hover:text-green-600 transition">Profil saya</a>
               <a href="#produk" className="block px-4 py-2 text-gray-700 hover:text-green-600 transition">Produk</a>
               <a href="#tentang" className="block px-4 py-2 text-gray-700 hover:text-green-600 transition">Tentang</a>
 
@@ -250,7 +263,10 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-block px-4 py-2 bg-green-100 rounded-full mb-4">
-                <span className="text-green-700 font-semibold text-sm">🌴 Produk Premium</span>
+                <span className="flex items-center gap-1 text-green-700 font-semibold text-sm">
+                  <Sprout size={16} />
+                  <span>Produk Premium</span>                    
+                </span>
               </div>
 
               <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
@@ -278,12 +294,16 @@ export default function Home() {
 
               <div className="grid grid-cols-2 gap-6 mt-12">
                 <div className="flex items-center gap-3">
-                  <Star className="w-6 h-6 text-yellow-500" />
-                  <span className="text-gray-700 font-semibold">Kualitas Terjamin</span>
+                  <span className="flex item-center gap-1 text-gray-700 font-semibold">
+                    < BadgeCheck size={22} />
+                    Kualitas Terjamin
+                    </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <MapPin className="w-6 h-6 text-green-600" />
-                  <span className="text-gray-700 font-semibold">Ekspor Global</span>
+                  <span className="flex item-center gap-1 text-gray-700 font-semibold">
+                    < Plane size={22} />
+                    Ekspor Global
+                  </span>
                 </div>
               </div>
             </div>
@@ -369,7 +389,9 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section id="tentang" className="bg-gradient-to-r from-green-600 to-green-700 text-white py-16 mt-20">
+      {!user&& (
+      <section 
+      id="tentang" className="bg-gradient-to-r from-green-600 to-green-700 text-white py-16 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Siap Mulai Ekspor?</h2>
           <p className="text-lg text-green-100 mb-8">Daftar sekarang dan nikmati pengalaman ekspor buah-buahan tropis yang mudah dan profesional</p>
@@ -380,6 +402,7 @@ export default function Home() {
           </a>
         </div>
       </section>
+      )}
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-12">
