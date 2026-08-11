@@ -6,6 +6,7 @@ import {
   Mail,
   Phone,
   MapPin,
+  BadgeCheck,
   Save,
   Package,
   Truck,
@@ -177,8 +178,15 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="font-semibold">
+              <label className="font-semibold flex items-center gap-2">
                 Email
+
+                {emailVerified && (
+                  <span className="flex items-center gap-1 text-green-600 text-sm font-medium">
+                    <BadgeCheck className="w-5 h-5" />
+                    Terverifikasi
+                  </span>
+                )}
               </label>
 
               <div className="relative mt-2">
@@ -188,19 +196,28 @@ export default function ProfilePage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Email"
-                  className="pl-11 w-full border rounded-xl p-3"
+                  disabled={emailVerified}
+                  className={`pl-11 w-full border rounded-xl p-3 ${
+                    emailVerified
+                      ? "bg-gray-100 cursor-not-allowed"
+                      : ""
+                  }`}
                 />
               </div>
-              
-              <button
-                type="button"
-                onClick={handleSendVerification}
-                disabled={sendingVerification}
-              >
-                {sendingVerification ? "Mengirim..." : "Kirim email verifikasi"}
-              </button>
-            </div>
 
+              {!emailVerified && (
+                <button
+                  type="button"
+                  onClick={handleSendVerification}
+                  disabled={sendingVerification}
+                  className="mt-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 disabled:opacity-50"
+                >
+                  {sendingVerification
+                    ? "Mengirim..."
+                    : "Kirim email verifikasi"}
+                </button>
+              )}
+            </div>
             <div>
               <label className="font-semibold">
                 Nomor Telepon
