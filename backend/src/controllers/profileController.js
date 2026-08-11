@@ -46,6 +46,23 @@ export const updateProfile = async (req, res) => {
       address,
     } = req.body;
 
+    // Ambil email lama
+    const currentUser = await pool.query(
+      `SELECT email FROM users WHERE id = $1`,
+      [req.user.id]
+    );
+
+    if (!currentUser.rows.length) {
+      return res.status(404).json({
+        message: "User tidak ditemukan",
+      });
+    }
+
+    const oldEmail = currentUser.rows[0].email;
+
+    // Cek apakah email berubah
+    const emailChanged = oldEmail !== email;
+
     const { rows } = await pool.query(
       `UPDATE users
        SET
@@ -53,8 +70,12 @@ export const updateProfile = async (req, res) => {
          email = $2,
          phone = $3,
          country = $4,
-         address = $5
-       WHERE id = $6
+         address = $5,
+         email_verified = CASE
+           WHEN $6 = true THEN false
+           ELSE email_verified
+         END
+       WHERE id = $7
        RETURNING
          id,
          full_name,
@@ -71,6 +92,7 @@ export const updateProfile = async (req, res) => {
         phone,
         country,
         address,
+        emailChanged,
         req.user.id,
       ]
     );
@@ -79,6 +101,7 @@ export const updateProfile = async (req, res) => {
       message: "Profil berhasil diperbarui",
       user: rows[0],
     });
+
   } catch (err) {
     console.error(err);
 

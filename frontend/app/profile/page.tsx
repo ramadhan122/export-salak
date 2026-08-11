@@ -19,6 +19,8 @@ export default function ProfilePage() {
   const [phone, setPhone] = useState("");
   const [country, setCountry] = useState("");
   const [address, setAddress] = useState("");
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [sendingVerification, setSendingVerification] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -39,6 +41,7 @@ export default function ProfilePage() {
         setPhone(data.phone || "");
         setCountry(data.country || "");
         setAddress(data.address || "");
+        setEmailVerified(data.email_verified || false);
       } catch (err) {
         console.error(err);
       }
@@ -79,6 +82,41 @@ export default function ProfilePage() {
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan profil");
+    }
+  };
+
+  // TAMBAHKAN DI SINI
+  const handleSendVerification = async () => {
+    try {
+      setSendingVerification(true);
+
+      const token = localStorage.getItem("authToken");
+
+      const res = await fetch(
+        "http://localhost:5000/api/email-verification/send",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Gagal mengirim email verifikasi");
+        return;
+      }
+
+      alert(
+        "Email verifikasi berhasil dikirim. Silakan cek inbox email Anda."
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Gagal mengirim email verifikasi");
+    } finally {
+      setSendingVerification(false);
     }
   };
 
@@ -153,6 +191,14 @@ export default function ProfilePage() {
                   className="pl-11 w-full border rounded-xl p-3"
                 />
               </div>
+              
+              <button
+                type="button"
+                onClick={handleSendVerification}
+                disabled={sendingVerification}
+              >
+                {sendingVerification ? "Mengirim..." : "Kirim email verifikasi"}
+              </button>
             </div>
 
             <div>
@@ -207,7 +253,7 @@ export default function ProfilePage() {
             </div>
 
           </div>
-
+          
           <button
             onClick={handleSave}
             className="mt-8 bg-green-600 hover:bg-green-700 text-white rounded-xl px-6 py-3 flex items-center gap-2 font-semibold transition"

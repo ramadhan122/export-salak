@@ -8,12 +8,14 @@ import authRoutes from "./routes/auth.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import profileRoutes from "./routes/profile.js";
+import emailVerificationRoutes from "./routes/emailVerification.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/api/email-verification", emailVerificationRoutes);
 app.use("/images", express.static("images"));
 // serve file gambar
 app.use(
