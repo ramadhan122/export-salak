@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   UserRound,
   Mail,
@@ -8,6 +9,7 @@ import {
   MapPin,
   BadgeCheck,
   Save,
+  Home,
   Package,
   Truck,
   CheckCircle2,
@@ -22,6 +24,7 @@ export default function ProfilePage() {
   const [address, setAddress] = useState("");
   const [emailVerified, setEmailVerified] = useState(false);
   const [sendingVerification, setSendingVerification] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -71,12 +74,18 @@ export default function ProfilePage() {
       });
 
       const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Gagal menyimpan profil");
+        return;
+      }
+
       if (data.user) {
-          setFullName(data.user.full_name || "");
-          setEmail(data.user.email || "");
-          setPhone(data.user.phone || "");
-          setCountry(data.user.country || "");
-          setAddress(data.user.address || "");
+        setFullName(data.user.full_name || "");
+        setEmail(data.user.email || "");
+        setPhone(data.user.phone || "");
+        setCountry(data.user.country || "");
+        setAddress(data.user.address || "");
       }
 
       alert(data.message);
@@ -122,7 +131,15 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="bg-gray-50">
+      {/* Tombol kembali - tidak mengambil ruang */}
+      <button
+        type="button"
+        onClick={() => router.push("/")}
+        className="fixed top-6 left-6 z-50 flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold transition"
+      >
+        <Home className="w-5 h-5" />
+      </button>
 
       <div className="max-w-4xl mx-auto">
 
@@ -205,7 +222,7 @@ export default function ProfilePage() {
                 />
               </div>
 
-              {!emailVerified && (
+              {email && !emailVerified && (
                 <button
                   type="button"
                   onClick={handleSendVerification}

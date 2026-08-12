@@ -36,6 +36,7 @@ export const getProfile = async (req, res) => {
 };
 
 // UPDATE PROFILE
+// UPDATE PROFILE
 export const updateProfile = async (req, res) => {
   try {
     const {
@@ -46,9 +47,11 @@ export const updateProfile = async (req, res) => {
       address,
     } = req.body;
 
-    // Ambil email lama
+    // Ambil data user saat ini
     const currentUser = await pool.query(
-      `SELECT email FROM users WHERE id = $1`,
+      `SELECT email, email_verified
+       FROM users
+       WHERE id = $1`,
       [req.user.id]
     );
 
@@ -60,8 +63,29 @@ export const updateProfile = async (req, res) => {
 
     const oldEmail = currentUser.rows[0].email;
 
+    // Normalisasi email
+    const newEmail = email?.trim().toLowerCase() || null;
+    const previousEmail = oldEmail?.trim().toLowerCase() || null;
+
     // Cek apakah email berubah
-    const emailChanged = oldEmail !== email;
+    const emailChanged = previousEmail !== newEmail;
+
+    // Jika email diubah, cek apakah sudah digunakan user lain
+    if (emailChanged && newEmail) {
+      const existingEmail = await pool.query(
+        `SELECT id
+        FROM users
+        WHERE LOWER(TRIM(email)) = $1
+        AND id <> $2`,
+        [newEmail, req.user.id]
+      );
+
+      if (existingEmail.rows.length > 0) {
+        return res.status(409).json({
+          message: "Email sudah digunakan oleh akun lain.",
+        });
+      }
+    }
 
     const { rows } = await pool.query(
       `UPDATE users
@@ -88,7 +112,7 @@ export const updateProfile = async (req, res) => {
          email_verified`,
       [
         full_name,
-        email,
+        newEmail,
         phone,
         country,
         address,
