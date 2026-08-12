@@ -132,11 +132,36 @@ export default function ProfilePage() {
 
   return (
     <div className="bg-gray-50">
+      {/* Animasi shaking untuk tombol home */}
+      <style jsx global>{`
+        @keyframes shake-home {
+          10%,
+          90% {
+            transform: translateX(-1px);
+          }
+          20%,
+          80% {
+            transform: translateX(2px);
+          }
+          30%,
+          50%,
+          70% {
+            transform: translateX(-4px);
+          }
+          40%,
+          60% {
+            transform: translateX(4px);
+          }
+        }
+        .btn-home-shake:hover {
+          animation: shake-home 1s ease-in-out;
+        }
+      `}</style>
       {/* Tombol kembali - tidak mengambil ruang */}
       <button
         type="button"
         onClick={() => router.push("/")}
-        className="fixed top-6 left-6 z-50 flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold transition"
+        className="btn-home-shake  fixed top-6 left-6 z-50 flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold transition"
       >
         <Home className="w-5 h-5" />
       </button>
