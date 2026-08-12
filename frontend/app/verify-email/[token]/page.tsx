@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 
 export default function VerifyEmailPage() {
   const params = useParams();
   const router = useRouter();
+  const verifyStarted = useRef(false);
 
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    if (!params.token || verifyStarted.current) return;
+
+    verifyStarted.current = true;
+
     const verifyEmail = async () => {
       try {
         const token = params.token;
@@ -42,11 +47,8 @@ export default function VerifyEmailPage() {
       }
     };
 
-    if (params.token) {
-      verifyEmail();
-    }
+    verifyEmail();
   }, [params.token, router]);
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-green-50 px-4">
       <div className="bg-white rounded-3xl shadow-sm border p-10 max-w-md w-full text-center">
