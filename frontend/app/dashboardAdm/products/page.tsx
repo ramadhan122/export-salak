@@ -3,7 +3,7 @@
 import AdminLayout from "../layouts";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { X, Plus, Trash2 } from "lucide-react";
+import { X, Plus, Trash2, Pencil } from "lucide-react";
 
 interface Product {
   id: number;
@@ -28,6 +28,7 @@ export default function ProductsAdmin() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   // form fields
   const [name, setName] = useState("");
@@ -40,7 +41,7 @@ export default function ProductsAdmin() {
   const [isHighlight, setIsHighlight] = useState(false);
 
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
   // ambil kategori
   const fetchCategories = async () => {
@@ -64,6 +65,7 @@ export default function ProductsAdmin() {
   }, []);
 
   const resetForm = () => {
+    setEditingId(null);
     setName("");
     setSlug("");
     setPrice("");
@@ -102,9 +104,69 @@ export default function ProductsAdmin() {
       resetForm();
       setShowModal(false);
       fetchProducts();
+    } catch (err: any) {
+      console.error("ADD PRODUCT ERROR:", err.response?.data || err);
+      alert(
+        err.response?.data?.error || "Gagal menambah produk");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const openEditModal = (product: Product) => {
+    setEditingId(product.id);
+    setName(product.name);
+    setSlug(product.slug);
+    setPrice(product.price);
+    setStock(product.stock);
+    setCategoryId(product.category_id);
+    setDescription(product.description);
+    setImage(null);
+    setIsHighlight(product.is_highlight);
+    setShowModal(true);
+  }
+
+  const editProduct = async () => {
+    if (!editingId) return;
+
+    if (!name || !slug || !price || !stock || !categoryId) {
+      return alert("Lengkapi semua field wajib!");
+    }
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("slug", slug);
+    formData.append("price", String(price));
+    formData.append("stock", String(stock));
+    formData.append("category_id", String(categoryId));
+    formData.append("description", description);
+    formData.append("is_highlight", isHighlight ? "true" : "false");
+
+    // hanya kirim gambar klau user memilih gambar baru
+    if (image) {
+      formData.append("image", image);
+    }
+
+    setSubmitting(true);
+
+    try {
+      await axios.put(
+        `http://localhost:5000/api/products/${editingId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      resetForm();
+      setShowModal(false);
+      fetchProducts();
     } catch (err) {
       console.error(err);
-      alert("Gagal menambah produk");
+      alert("Gagal mengedit produk");
     } finally {
       setSubmitting(false);
     }
@@ -212,13 +274,23 @@ export default function ProductsAdmin() {
                         : "-"}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => deleteProduct(p.id)}
-                        className="text-red-600 hover:text-red-700 p-1"
-                        title="Hapus"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      <div className="flex justify-end items-center gap-2">
+                        <button
+                        onClick={() => openEditModal(p)}
+                        className="text-blue-600 hover:text-blue-700 p-1"
+                        title="Edit"
+                        >
+                          <Pencil size={18} />
+                        </button>
+
+                        <button
+                          onClick={() => deleteProduct(p.id)}
+                          className="text-red-600 hover:text-red-700 p-1"
+                          title="Hapus"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -230,12 +302,12 @@ export default function ProductsAdmin() {
 
       {/* Modal Popup */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-md shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex justify-between items-center px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold text-gray-900">
-                Tambah Produk
+                {editingId ? "Edit Produk" : "Tambah Produk"}
               </h2>
               <button
                 onClick={() => {
@@ -386,11 +458,15 @@ export default function ProductsAdmin() {
                 Batal
               </button>
               <button
-                onClick={addProduct}
+                onClick={ editingId ? editProduct : addProduct}
                 disabled={submitting}
                 className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-md font-medium text-sm transition-colors"
               >
-                {submitting ? "Menyimpan..." : "Simpan"}
+                {submitting 
+                ? "Menyimpan..."
+                : editingId
+                ? "Update"
+                : "Simpan"}
               </button>
             </div>
           </div>
