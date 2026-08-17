@@ -209,7 +209,7 @@ export default function Home() {
                   onClick={() => setShowLogoutModal(true)}
                   className="flex items-center gap-2 px-4 py-2 border border-green-600 rounded-lg font-semibold text-green-700 hover:bg-green-50 transition"
                 >
-                  <LogOut className="w-5 h-5" /> Keluar
+                  <LogOut className="w-5 h-5" />
                 </button>
                 </div>
 

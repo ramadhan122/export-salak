@@ -8,6 +8,7 @@ interface Product {
   id: number;
   name: string;
   price: number;
+  stock: number;
   image: string | null;
   description?: string;
 }
@@ -44,7 +45,7 @@ export default function ProductDetailPage() {
         <div className="grid md:grid-cols-2 gap-10">
 
           {/* IMAGE */}
-          <div className="bg-white rounded-2xl overflow-hidden border">
+          <div className="bg-white rounded-2xl overflow-hidden border aspect-square">
             {product.image ? (
               <img
                 src={`http://localhost:5000/uploads/${product.image}`}
@@ -52,7 +53,7 @@ export default function ProductDetailPage() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="flex items-center justify-center h-80">
+              <div className="flex items-center justify-center h-full">
                 <Leaf className="w-20 h-20 text-green-400" />
               </div>
             )}
@@ -73,13 +74,22 @@ export default function ProductDetailPage() {
               Rp {product.price.toLocaleString("id-ID")} /Kg
             </p>
 
+            <p className="text-gray-600 mb-6">
+              Stok tersedia:{" "}
+              <span className="font-semibold text-green-600">
+                {product.stock} Kg
+              </span>
+
+            </p>
+
             {/* Quantity */}
             <div className="flex items-center gap-4 mb-6">
               <button
-                onClick={() => setQty(qty > 1 ? qty - 1 : 1)}
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                onClick={() => setQty(qty < product.stock ? qty + 1 : qty)}
+                disabled={qty >= product.stock}
+                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                -
+                +
               </button>
 
               <span className="text-lg font-semibold">
@@ -103,7 +113,7 @@ export default function ProductDetailPage() {
             </p>
 
             {/* Button */}
-            <button className="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
+            <button className="px-6 flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition">
               <ShoppingCart className="w-5 h-5" />
               Tambah ke Keranjang
             </button>
