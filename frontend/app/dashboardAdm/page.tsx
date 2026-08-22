@@ -2,59 +2,100 @@
 
 import { useEffect, useState } from "react";
 import { Package, Users, BarChart3 } from "lucide-react";
-import AdminLayout from "./layouts"; // pastikan path sesuai
+import AdminLayout from "./layouts";
 
 export default function DashboardPage() {
   const [username, setUsername] = useState("");
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
 
   useEffect(() => {
     const user = localStorage.getItem("username") || "";
     setUsername(user);
+
+    fetch("http://localhost:5000/api/dashboard")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Gagal mengambil data dashboard");
+        }
+
+        return res.json();
+      })
+      .then((data) => {
+        setTotalProducts(data.totalProducts);
+        setTotalUsers(data.totalUsers);
+      })
+      .catch((err) => {
+        console.error("Gagal mengambil data dashboard:", err);
+      });
   }, []);
 
   return (
     <AdminLayout>
-      {/* Content */}
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <span className="text-gray-600">
-            Selamat datang, <b>{username}</b> 👋
-          </span>
-        </div>
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <div className="p-6 bg-white rounded-xl shadow flex items-center gap-4">
-            <div className="p-3 bg-orange-100 text-orange-600 rounded-lg">
-              <Package className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">Total Produk</p>
-              <h3 className="text-xl font-bold">128</h3>
-            </div>
+        <span className="text-gray-600">
+          Selamat datang, <b>{username}</b> 👋
+        </span>
+      </div>
+
+      {/* Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+
+        {/* Total Produk */}
+        <div className="p-6 bg-white rounded-xl shadow flex items-center gap-4">
+          <div className="p-3 bg-orange-100 text-orange-600 rounded-lg">
+            <Package className="w-6 h-6" />
           </div>
 
-          <div className="p-6 bg-white rounded-xl shadow flex items-center gap-4">
-            <div className="p-3 bg-blue-100 text-blue-600 rounded-lg">
-              <Users className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">Pengguna Terdaftar</p>
-              <h3 className="text-xl font-bold">54</h3>
-            </div>
-          </div>
+          <div>
+            <p className="text-gray-500 text-sm">
+              Total Produk
+            </p>
 
-          <div className="p-6 bg-white rounded-xl shadow flex items-center gap-4">
-            <div className="p-3 bg-green-100 text-green-600 rounded-lg">
-              <BarChart3 className="w-6 h-6" />
-            </div>
-            <div>
-              <p className="text-gray-500 text-sm">Ekspor Bulan Ini</p>
-              <h3 className="text-xl font-bold">23</h3>
-            </div>
+            <h3 className="text-xl font-bold">
+              {totalProducts}
+            </h3>
           </div>
         </div>
+
+        {/* Pengguna */}
+        <div className="p-6 bg-white rounded-xl shadow flex items-center gap-4">
+          <div className="p-3 bg-blue-100 text-blue-600 rounded-lg">
+            <Users className="w-6 h-6" />
+          </div>
+
+          <div>
+            <p className="text-gray-500 text-sm">
+              Pengguna Terdaftar
+            </p>
+
+            <h3 className="text-xl font-bold">
+              {totalUsers}
+            </h3>
+          </div>
+        </div>
+
+        {/* Ekspor */}
+        <div className="p-6 bg-white rounded-xl shadow flex items-center gap-4">
+          <div className="p-3 bg-green-100 text-green-600 rounded-lg">
+            <BarChart3 className="w-6 h-6" />
+          </div>
+
+          <div>
+            <p className="text-gray-500 text-sm">
+              Ekspor Bulan Ini
+            </p>
+
+            <h3 className="text-xl font-bold">
+              -
+            </h3>
+          </div>
+        </div>
+
+      </div>
     </AdminLayout>
   );
 }

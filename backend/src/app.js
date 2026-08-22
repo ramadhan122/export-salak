@@ -5,6 +5,7 @@ import productRoutes from "./routes/products.js";
 import categoryRoutes from "./routes/categories.js";
 import rfqRoutes from "./routes/rfq.js"; 
 import authRoutes from "./routes/auth.js";
+import dashboardRoutes from "./routes/dashboard.js"
 import path from "path";
 import { fileURLToPath } from "url";
 import profileRoutes from "./routes/profile.js";
@@ -25,6 +26,7 @@ app.use(
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/rfq", rfqRoutes);
+app.use("/api/dashboard", dashboardRoutes)
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.listen(5000, () => console.log("Api running on port 5000"))
