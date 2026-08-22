@@ -83,22 +83,23 @@ export default function ProductDetailPage() {
             </p>
 
             {/* Quantity */}
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-3 mb-6">
               <button
-                onClick={() => setQty(qty < product.stock ? qty + 1 : qty)}
-                disabled={qty >= product.stock}
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => setQty(qty > 1 ? qty - 1 : 1)}
+                disabled={product.stock <= 0}
+                className="w-9 h-9 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                +
+                −
               </button>
 
-              <span className="text-lg font-semibold">
+              <span className="w-10 text-center text-lg font-semibold">
                 {qty}
               </span>
 
               <button
-                onClick={() => setQty(qty + 1)}
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                onClick={() => setQty(qty < product.stock ? qty + 1 : qty)}
+                disabled={qty >= product.stock}
+                className="w-9 h-9 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 +
               </button>
